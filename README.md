@@ -4,7 +4,7 @@ Note: You are strongly encouraged to work together.  However, each person is res
 
 Overview: E2A is part of a TCF4 gene that is a marker for Pitt-Hopkins Syndrome. Its natural function is to bind to the KIX Domain of CREB binding protein, but large parts of the TCF4 gene are deleted in those who have Pitt-Hopkins. In addition, E2A is an intrinsically disordered protein that forms a structure upon binding to the KIX Domain. As such, this protein complex is interesting from both biomedical and basic science perspectives.
 
-We will perform CHARMM MD simulations with NAMD of 1) KIX Domain, 2) E2A, and 3) E2A:KIX Domain Complex in explicit solvent on the DEAC cluster.  Using the production run of the simulation, we will use VMD and other programs to visualize trajectories and perform analyses on them to compare how each of the individual components behave in the absence of its partner vs. in complex.
+We will perform CHARMM MD simulations with NAMD of 1) KIX Domain, 2) E2A, and 3) E2A:KIX Domain Complex in explicit solvent on the DEAC cluster.  Using the production run of the simulation, we will use VMD and other programs to visualize trajectories and perform analyses on them.
 
 ## Part 1: MD simulations of E2A:KIX Domain Complex
 
@@ -118,12 +118,12 @@ After you’re done, save your changes and exit out of the program
 11. Next we will set up 10 ns of MD simulations of 1 ns parts using the dyna.temp file. Type the following command:
 
 ```
-for ((i=2; i<=251; i++)); do ./gen_scripts.sh $i; done
+for ((i=2; i<=11; i++)); do ./gen_scripts.sh $i; done
 ```
 
 This is a nifty little program that I wrote that will write NAMD configuration file for doing the 1st nanosecond of MD simulation and then the 2nd nanosecond and so forth until the end.
 
-12. Next we will set up the SLURM script for running MD simulations on the cluster. Again, this is a generic script for any biomolecule. You will need to modify it using the VS Code program..
+12. Next we will set up the SLURM script for running MD simulations on the cluster. Again, this is a generic script for any biomolecule. You will need to modify it using the __nano__ program..
 
   a. Open “md-equil.slurm” using __nano__. 
   
@@ -173,3 +173,68 @@ Part of your grade on your project will depend on how long each of your MD simul
 15. When your MD simulation is finished, you can visualize it using VMD and even save it as a video.
 
 __Turn in the movie on Canvas.  Feel free to use any artistic license you please.__
+
+
+## Part 2: Analyze and Visualize your Trajectories
+
+### Part 2-1: Ramachandran Plots of E2A
+
+1. In your directory is the MD simulations of the E2A:KIX Domain Complex.  We will calculate the Ramachandran Plots of the last completed nanosecond trajectory for E2A.
+2. In each of the two directories, you will find a file called “dihe.tcl”. You can run it as is by using the following command:
+
+```
+vmd -dispdev text -e dihe.tcl
+```
+
+It opens your trajectory file in the 5th nanosecond and loops over every single frame. For residues 92 and 105, the phi and psi dihedral angles are computed by selecting the four atoms that define those dihedral angles.  Then, the result will be printed out into a file called dihe.tcl.
+
+When you open dihe.dat with __nano__, you will see 5 columns. The first column has the frame number and the next two columns will have the phi and psi angles for residue 92, and the next two columns will have the phi and psi angles for residue 105.
+
+3. Your job is to calculate the phi and psi angles for all residues 92-105, inclusive, in the last trajectory only and plot the Ramachandran plot for all 14 residues. To do so, you will begin by modifying the dihe.tcl file in the following ways:
+
+a)	On line 1, you will replace “2kwf_wbi_2e.dcd” with the dcd file of your last completed nanosecond trajectory.
+b)	On line 14, you will introduce new lines for the phi/psi dihedral angle calculations for residues 93-104, inclusive, using the lines for the phi/psi dihedral angle calculations for residues 92 and 105 as a template.
+c)	On line 19, you will modify it to print out the phi/psi dihedral angles that you calculated in (b).
+
+Once you are complete, re-run dihe.tcl:
+vmd -dispdev text -e dihe.tcl
+
+4. Use Filezilla to copy the dihe.dat and graph the Ramachandran Plots and deposit only the images into Canvas. You will have 14 Ramachandran Plots.
+
+### Part 2-2: Root Mean Square Fluctuations
+1) In your directory is the MD simulations of the E2A:KIX Domain Complex.  We will calculate the RMSF of the last completed nanosecond trajectory for the E2A and KIX Domain.  
+
+2) In your directory, you will find a file called “rmsf.tcl”. You can run it as is by using the following command:
+```
+vmd -dispdev text -e rmsf.tcl
+```
+
+It opens the initial X-ray crystallographic structure for your MD simulation and also your trajectory file in the 5th nanosecond. It loops over the entire trajectory and performs a best-fit alignment of every structure to the X-ray crystallographic structure. This is so that we eliminate any translational motion in our calculation of the structural fluctuations. Then, the program computes the RMSF for each C-alpha carbon such that we can quantify how much each residue fluctuates over the trajectory. The result will be printed out into a file called rmsf.dat.
+
+When you open rmsf.dat with __nano__, you will see 2 columns. The first column has the residue number and the next column has the RMSF of the residue.
+3) Your job is to calculate the RMSF in the last trajectory only. To do so, you will begin by modifying the rmsf.tcl file in the following ways:
+
+a)	On line 2, you will replace “[ID]” with “2kwf” and “6e” with the number of the dcd file of your last completed nanosecond trajectory.
+b)	That is all. Really.
+
+Once you are complete, re-run rmsf.tcl:
+```
+vmd -dispdev text -e rmsf.tcl
+```
+Copy the rmsf.dat, graph a single RMSF Plot with the data and deposit only the image into Canvas.
+
+### Part 2-3: Movie
+
+You will use the Movie Maker in VMD to make a movie using a single trajectory from your directory. See Project 1, Part 2 for reference.
+
+You will turn in your movie by sharing it with me using Google Drive. You will share the link on Canvas.
+
+Unlike the previous movie, you will be graded on the following criteria:
+
+1. Creativity
+2.	Informative: a) With respect to MD simulations, b) With respect to Pitt-Hopkins Syndrome, c) With respect to Intrinsically Disordered Proteins
+
+Each movie should be for a general audience and may be no longer than 10 minutes. 
+
+
+
