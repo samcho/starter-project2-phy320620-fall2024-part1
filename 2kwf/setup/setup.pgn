@@ -1,0 +1,30 @@
+## Description: Set up biomolecule for NAMD
+## Input: [ID]_a.pdb [ID]_b.pdb
+## Output: [ID].namd.psf, [ID].namd.pdb
+
+# load psfgen package
+package require psfgen
+# load CHARMM22 topology file for proteins w/ CMAP corrections
+topology top_all36_prot_na.rtf
+
+# read in PDB structure; add end caps
+segment A {pdb [ID]_a.pdb; first NTER; last CTER; auto angles dihedrals }
+
+# read in PDB coordinates for protein assign to segment A
+coordpdb [ID]_a.pdb A
+
+# read in PDB structure; add end caps
+segment B {pdb [ID]_b.pdb; first GLYP; last CTER; auto angles dihedrals }
+
+# read in PDB coordinates for protein assign to segment B
+coordpdb [ID]_b.pdb B
+
+# guess coordinates for any missing atoms (e.g., hydrogens)
+guesscoord
+
+# write out the connectivity information
+writepsf [ID].namd.psf
+# write out the converted PDB file
+writepdb [ID].namd.pdb
+
+exit

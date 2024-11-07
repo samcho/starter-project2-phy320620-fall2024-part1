@@ -1,0 +1,25 @@
+## Description: Solvate biomolecule in water cube
+## Input: [ID].namd.psf, [ID].namd.pdb
+## Output: [ID]_wb.psf, [ID]_wb.pdb
+
+# load solvate package
+package require solvate
+
+# solvate the biomolecular (b=2.4 A for prot; b=1.6 A for nucl) and output 
+# the result
+
+solvate [ID].namd.psf [ID].namd.pdb -t 10.0 -b 2.4 -o [ID]_wb
+
+# select everything
+set everyone [atomselect top all]
+
+# measure the min/max coordinate values
+measure minmax $everyone
+
+# measure the center of mass
+measure center $everyone
+
+package require autoionize
+autoionize -psf [ID]_wb.psf -pdb [ID]_wb.pdb -sc 0.10 -o [ID]_wbi
+
+exit
